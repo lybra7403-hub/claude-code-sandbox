@@ -1,117 +1,228 @@
 """日本語セッション名ジェネレーター
 
-セッションの内容に基づいて、日本語の名前を自動生成します。
+英語のセッション名と同じルールで、日本語の名前を生成します。
+例: "Fix login bug" → "ログインバグの修正"
 """
 
-import random
-from datetime import datetime
 
-# 季節の言葉
-SEASONS = {
-    (3, 4, 5): ["春風", "桜", "若葉", "花見", "霞"],
-    (6, 7, 8): ["夏空", "風鈴", "蛍", "向日葵", "涼風"],
-    (9, 10, 11): ["紅葉", "秋風", "月見", "実り", "夕暮"],
-    (12, 1, 2): ["雪", "冬空", "初日", "氷柱", "静寂"],
-}
+def translate_session_name(english_name: str) -> str:
+    """英語のセッション名を日本語に変換する
 
-# トピック別の語彙
-TOPIC_WORDS = {
-    "bug": ["修復", "解決", "調整"],
-    "fix": ["修復", "解決", "調整"],
-    "feature": ["新機能", "拡張", "追加"],
-    "refactor": ["整理", "改善", "刷新"],
-    "test": ["検証", "試験", "確認"],
-    "docs": ["文書", "記録", "説明"],
-    "style": ["装飾", "美化", "整形"],
-    "api": ["接続", "連携", "通信"],
-    "database": ["蓄積", "保管", "記憶"],
-    "ui": ["画面", "表示", "設計"],
-    "deploy": ["配備", "公開", "展開"],
-    "security": ["防御", "保護", "安全"],
-    "performance": ["高速化", "最適化", "効率化"],
-}
-
-# 汎用的な動詞・修飾語
-ACTIONS = ["の道", "の旅", "の探求", "の工房", "の作業", "の時間"]
-ADJECTIVES = ["静かな", "力強い", "丁寧な", "軽やかな", "確かな", "新しい"]
-
-
-def get_seasonal_word() -> str:
-    """現在の季節に応じた言葉を返す"""
-    month = datetime.now().month
-    for months, words in SEASONS.items():
-        if month in months:
-            return random.choice(words)
-    return "風"
-
-
-def generate_session_name(topic: str = "", keywords: list[str] | None = None) -> str:
-    """セッションの内容に基づいて日本語の名前を生成する
+    標準的なセッション名パターン（動詞 + 対象）を日本語に翻訳します。
 
     Args:
-        topic: セッションのトピック（例: "bug fix", "new feature"）
-        keywords: セッション内容に関連するキーワードのリスト
+        english_name: 英語のセッション名（例: "Fix login bug"）
 
     Returns:
         日本語のセッション名
     """
-    parts = []
+    # 動詞の翻訳マップ
+    verbs = {
+        "fix": "修正",
+        "add": "追加",
+        "update": "更新",
+        "remove": "削除",
+        "refactor": "リファクタリング",
+        "implement": "実装",
+        "create": "作成",
+        "delete": "削除",
+        "improve": "改善",
+        "optimize": "最適化",
+        "debug": "デバッグ",
+        "test": "テスト",
+        "configure": "設定",
+        "setup": "セットアップ",
+        "migrate": "移行",
+        "deploy": "デプロイ",
+        "review": "レビュー",
+        "analyze": "分析",
+        "design": "設計",
+        "document": "ドキュメント作成",
+        "rename": "リネーム",
+        "move": "移動",
+        "merge": "マージ",
+        "revert": "リバート",
+        "upgrade": "アップグレード",
+        "downgrade": "ダウングレード",
+        "enable": "有効化",
+        "disable": "無効化",
+        "integrate": "統合",
+        "extract": "抽出",
+        "replace": "置換",
+        "convert": "変換",
+        "validate": "バリデーション",
+        "handle": "ハンドリング",
+        "support": "サポート",
+        "build": "ビルド",
+        "clean": "クリーンアップ",
+        "clean up": "クリーンアップ",
+        "explore": "調査",
+        "investigate": "調査",
+        "research": "調査",
+    }
 
-    # トピックからマッチする語彙を探す
-    topic_word = None
-    if topic:
-        topic_lower = topic.lower()
-        for key, words in TOPIC_WORDS.items():
-            if key in topic_lower:
-                topic_word = random.choice(words)
-                break
+    # よく使われる名詞の翻訳マップ
+    nouns = {
+        "bug": "バグ",
+        "error": "エラー",
+        "issue": "問題",
+        "feature": "機能",
+        "function": "関数",
+        "method": "メソッド",
+        "class": "クラス",
+        "component": "コンポーネント",
+        "module": "モジュール",
+        "test": "テスト",
+        "tests": "テスト",
+        "config": "設定",
+        "configuration": "設定",
+        "database": "データベース",
+        "api": "API",
+        "ui": "UI",
+        "style": "スタイル",
+        "layout": "レイアウト",
+        "page": "ページ",
+        "route": "ルート",
+        "endpoint": "エンドポイント",
+        "auth": "認証",
+        "authentication": "認証",
+        "authorization": "認可",
+        "login": "ログイン",
+        "logout": "ログアウト",
+        "user": "ユーザー",
+        "password": "パスワード",
+        "email": "メール",
+        "notification": "通知",
+        "message": "メッセージ",
+        "file": "ファイル",
+        "image": "画像",
+        "button": "ボタン",
+        "form": "フォーム",
+        "input": "入力",
+        "output": "出力",
+        "response": "レスポンス",
+        "request": "リクエスト",
+        "header": "ヘッダー",
+        "footer": "フッター",
+        "sidebar": "サイドバー",
+        "navbar": "ナビバー",
+        "menu": "メニュー",
+        "modal": "モーダル",
+        "dialog": "ダイアログ",
+        "table": "テーブル",
+        "list": "リスト",
+        "item": "アイテム",
+        "data": "データ",
+        "cache": "キャッシュ",
+        "log": "ログ",
+        "logging": "ロギング",
+        "performance": "パフォーマンス",
+        "security": "セキュリティ",
+        "dependency": "依存関係",
+        "dependencies": "依存関係",
+        "package": "パッケージ",
+        "library": "ライブラリ",
+        "framework": "フレームワーク",
+        "server": "サーバー",
+        "client": "クライアント",
+        "middleware": "ミドルウェア",
+        "handler": "ハンドラー",
+        "controller": "コントローラー",
+        "service": "サービス",
+        "model": "モデル",
+        "view": "ビュー",
+        "template": "テンプレート",
+        "schema": "スキーマ",
+        "migration": "マイグレーション",
+        "query": "クエリ",
+        "session": "セッション",
+        "token": "トークン",
+        "type": "型",
+        "types": "型定義",
+        "interface": "インターフェース",
+        "documentation": "ドキュメント",
+        "docs": "ドキュメント",
+        "readme": "README",
+        "workflow": "ワークフロー",
+        "pipeline": "パイプライン",
+        "ci": "CI",
+        "cd": "CD",
+        "docker": "Docker",
+        "container": "コンテナ",
+        "environment": "環境",
+        "variable": "変数",
+        "constant": "定数",
+        "hook": "フック",
+        "callback": "コールバック",
+        "event": "イベント",
+        "listener": "リスナー",
+        "validator": "バリデーター",
+        "formatter": "フォーマッター",
+        "parser": "パーサー",
+        "util": "ユーティリティ",
+        "utility": "ユーティリティ",
+        "helper": "ヘルパー",
+        "wrapper": "ラッパー",
+        "plugin": "プラグイン",
+        "extension": "拡張機能",
+        "script": "スクリプト",
+        "command": "コマンド",
+    }
 
-    if keywords:
-        for kw in keywords:
-            kw_lower = kw.lower()
-            for key, words in TOPIC_WORDS.items():
-                if key in kw_lower:
-                    topic_word = random.choice(words)
-                    break
-            if topic_word:
-                break
+    words = english_name.strip().split()
+    if not words:
+        return english_name
 
-    # 名前の組み立て
-    seasonal = get_seasonal_word()
-    adj = random.choice(ADJECTIVES)
+    # 先頭の動詞を検出
+    first = words[0].lower()
+    verb_ja = verbs.get(first)
 
-    if topic_word:
-        # トピックが見つかった場合: 「季節語 + トピック語 + アクション」
-        action = random.choice(ACTIONS)
-        parts = [seasonal, "・", topic_word, action]
-    else:
-        # 汎用: 「形容詞 + 季節語 + アクション」
-        action = random.choice(ACTIONS)
-        parts = [adj, seasonal, action]
+    if verb_ja and len(words) > 1:
+        # 残りの単語を名詞として翻訳
+        rest = words[1:]
+        translated_rest = []
+        for w in rest:
+            lower = w.lower()
+            if lower in nouns:
+                translated_rest.append(nouns[lower])
+            else:
+                # 翻訳できない固有名詞はそのまま残す
+                translated_rest.append(w)
 
-    return "".join(parts)
+        subject = "".join(translated_rest)
+        return f"{subject}の{verb_ja}"
 
+    # 動詞が見つからない場合は単語ごとに翻訳を試みる
+    translated = []
+    for w in words:
+        lower = w.lower()
+        if lower in nouns:
+            translated.append(nouns[lower])
+        elif lower in verbs:
+            translated.append(verbs[lower])
+        else:
+            translated.append(w)
 
-def generate_batch(count: int = 5, topic: str = "") -> list[str]:
-    """複数のセッション名候補を生成する"""
-    names = set()
-    while len(names) < count:
-        names.add(generate_session_name(topic=topic))
-    return sorted(names)
+    return "".join(translated)
 
 
 if __name__ == "__main__":
-    print("=== 日本語セッション名ジェネレーター ===\n")
+    examples = [
+        "Fix login bug",
+        "Add user authentication",
+        "Update API endpoint",
+        "Remove unused dependencies",
+        "Refactor database queries",
+        "Implement notification service",
+        "Optimize cache performance",
+        "Debug session handler",
+        "Create Docker workflow",
+        "Migrate database schema",
+        "Review security config",
+        "Explore React component",
+    ]
 
-    print("■ 汎用セッション名:")
-    for name in generate_batch(5):
-        print(f"  {name}")
-
-    print()
-
-    topics = ["bug fix", "new feature", "refactoring", "API integration", "deploy"]
-    for t in topics:
-        print(f"■ トピック「{t}」:")
-        for name in generate_batch(3, topic=t):
-            print(f"  {name}")
-        print()
+    print("=== セッション名の日本語変換 ===\n")
+    for name in examples:
+        ja = translate_session_name(name)
+        print(f"  {name:<40} → {ja}")
